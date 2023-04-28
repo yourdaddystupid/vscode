@@ -7,7 +7,7 @@ import 'vs/css!./interactiveEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { DisposableStore, MutableDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ICodeEditor, IDiffEditorConstructionOptions } from 'vs/editor/browser/editorBrowser';
-import { EditorOption } from 'vs/editor/common/config/editorOptions';
+import { EditorOption, IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { localize } from 'vs/nls';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -39,6 +39,13 @@ import { FileKind } from 'vs/platform/files/common/files';
 import { IAction } from 'vs/base/common/actions';
 import { IActionViewItemOptions } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import * as aria from 'vs/base/browser/ui/aria/aria';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
+import { ILanguageFeaturesService } from 'vs/editor/common/services/languageFeatures';
 
 const _inputEditorOptions: IEditorConstructionOptions = {
 	padding: { top: 3, bottom: 2 },
@@ -174,7 +181,8 @@ class InteractiveEditorWidget {
 			])
 		};
 
-		this.inputEditor = this._instantiationService.createInstance(EmbeddedCodeEditorWidget, this._elements.editor, _inputEditorOptions, codeEditorWidgetOptions, parentEditor);
+		// EmbeddedCodeEditorWidget
+		this.inputEditor = this._instantiationService.createInstance(InteractiveEditorEmbeddedCodeWidget, this._elements.editor, _inputEditorOptions, codeEditorWidgetOptions, parentEditor);
 		this._store.add(this.inputEditor);
 
 		const uri = URI.from({ scheme: 'vscode', authority: 'interactive-editor', path: `/interactive-editor/model${InteractiveEditorWidget._modelPool++}.txt` });
@@ -204,6 +212,7 @@ class InteractiveEditorWidget {
 		togglePlaceholder();
 
 		const inputEditor = this._store.add(trackFocus(this.inputEditor.getDomNode()!));
+		// directly try to set the input editor aria label?
 		this._store.add(inputEditor.onDidFocus(() => {
 			this.readAriaStatus(typeof this._inputValue !== 'undefined' ? this._inputValue : '');
 		}));
@@ -307,6 +316,8 @@ class InteractiveEditorWidget {
 		this._inputModel.setValue(value);
 		this.inputEditor.setSelection(this._inputModel.getFullModelRange());
 		this.inputEditor.updateOptions({ ariaLabel: localize('aria-label.N', "Interactive Editor Input: {0}", placeholder) });
+
+		console.log('this.inputEditor : ', this.inputEditor);
 
 		const disposeOnDone = new DisposableStore();
 
@@ -512,6 +523,18 @@ class InteractiveEditorWidget {
 	showsAnyPreview() {
 		return !this._elements.previewDiff.classList.contains('hidden') ||
 			!this._elements.previewCreate.classList.contains('hidden');
+	}
+}
+
+class InteractiveEditorEmbeddedCodeWidget extends EmbeddedCodeEditorWidget {
+
+	constructor(domElement: HTMLElement, options: IEditorOptions, codeEditorWidgetOptions: ICodeEditorWidgetOptions, parentEditor: ICodeEditor, instantiationService: IInstantiationService, codeEditorService: ICodeEditorService, commandService: ICommandService, contextKeyService: IContextKeyService, themeService: IThemeService, notificationService: INotificationService, accessibilityService: IAccessibilityService, languageConfigurationService: ILanguageConfigurationService, languageFeaturesService: ILanguageFeaturesService) {
+		super(domElement, options, codeEditorWidgetOptions, parentEditor, instantiationService, codeEditorService, commandService, contextKeyService, themeService, notificationService, accessibilityService, languageConfigurationService, languageFeaturesService);
+	}
+
+	getAriaLabel() {
+		console.log('inside of get aria label');
+		return 'Interactive Input Editor';
 	}
 }
 
