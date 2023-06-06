@@ -121,6 +121,11 @@
           "tags": [
             "usesOnlineServices"
           ]
+        },
+        "json.sortOnSave.enable": {
+          "type": "boolean",
+          "default": false,
+          "description": "%json.enableSortOnSave.desc%"
         }
       }
     },

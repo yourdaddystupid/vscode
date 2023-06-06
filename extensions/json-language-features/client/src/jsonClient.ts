@@ -73,6 +73,7 @@ type Settings = {
 		format?: { enable?: boolean };
 		keepLines?: { enable?: boolean };
 		validate?: { enable?: boolean };
+		sortOnSave?: { enable?: boolean };
 		resultLimit?: number;
 		jsonFoldingLimit?: number;
 		jsoncFoldingLimit?: number;
@@ -97,6 +98,7 @@ export namespace SettingIds {
 	export const enableKeepLines = 'json.format.keepLines';
 	export const enableValidation = 'json.validate.enable';
 	export const enableSchemaDownload = 'json.schemaDownload.enable';
+	export const enableSortOnSave = 'json.sortOnSave.enable';
 	export const maxItemsComputed = 'json.maxItemsComputed';
 	export const editorFoldingMaximumRegions = 'editor.foldingMaximumRegions';
 	export const editorColorDecoratorsLimit = 'editor.colorDecoratorsLimit';
@@ -536,6 +538,7 @@ function getSettings(): Settings {
 			validate: { enable: configuration.get(SettingIds.enableValidation) },
 			format: { enable: configuration.get(SettingIds.enableFormatter) },
 			keepLines: { enable: configuration.get(SettingIds.enableKeepLines) },
+			sortOnSave: { enable: configuration.get(SettingIds.enableSortOnSave) },
 			schemas,
 			resultLimit: resultLimit + 1, // ask for one more so we can detect if the limit has been exceeded
 			jsonFoldingLimit: jsonFoldingLimit + 1,
