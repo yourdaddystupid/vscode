@@ -53,8 +53,10 @@ import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
 import { ExpansionState } from 'vs/workbench/contrib/interactiveEditor/browser/interactiveEditorSession';
 import { IdleValue } from 'vs/base/common/async';
 import * as aria from 'vs/base/browser/ui/aria/aria';
+import { createTrustedTypesPolicy } from 'vs/base/browser/trustedTypes';
 
 const defaultAriaLabel = localize('aria-label', "Interactive Editor Input");
+const ttPolicy = createTrustedTypesPolicy('interactiveEditor', { createHTML: value => value });
 
 const _inputEditorOptions: IEditorConstructionOptions = {
 	padding: { top: 3, bottom: 2 },
@@ -783,7 +785,14 @@ export class InteractiveEditorZoneWidget extends ZoneWidget {
 		if (!lineIndentColumn) {
 			return;
 		}
-		return (lineIndentColumn - 1) * this.editor.getOption(EditorOption.fontSize);
+		const element = document.createElement('span');
+		let htmlString = '';
+		for (let i = 0; i < lineIndentColumn - 1; i++) {
+			htmlString += '&nbsp;';
+		}
+		element.innerHTML = (ttPolicy ? ttPolicy.createHTML(htmlString) : htmlString) as string;
+		const width = getTotalWidth(element);
+		return width; // (lineIndentColumn - 1) * this.editor.getOption(EditorOption.fontSize);
 	}
 
 	private _computeHeightInLines(): number {
