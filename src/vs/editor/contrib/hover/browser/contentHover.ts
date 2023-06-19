@@ -607,7 +607,10 @@ export class ContentHoverWidget extends Disposable implements IContentWidget {
 	}
 
 	public hide(): void {
-		if (this._visibleData) {
+		console.log('inside of hide');
+		console.log('hoverFocusedKey.get() : ', this._hoverFocusedKey.get());
+
+		if (this._visibleData && !this._hoverFocusedKey.get()) {
 			const stoleFocus = this._visibleData.stoleFocus;
 			this._setVisibleData(null);
 			this._hoverFocusedKey.set(false);
