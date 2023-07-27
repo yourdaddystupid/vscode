@@ -162,6 +162,16 @@ const editorConfiguration: IConfigurationNode = {
 			default: true,
 			description: nls.localize('sideBySide', "Controls whether the diff editor shows the diff side by side or inline.")
 		},
+		'diffEditor.renderSideBySideInlineBreakpoint': {
+			type: 'number',
+			default: true,
+			description: nls.localize('renderSideBySideInlineBreakpoint', "TODO")
+		},
+		'diffEditor.useInlineViewWhenSpaceIsLimited': {
+			type: 'boolean',
+			default: true,
+			description: nls.localize('useInlineViewWhenSpaceIsLimited', "TODO")
+		},
 		'diffEditor.renderMarginRevertIcon': {
 			type: 'boolean',
 			default: true,
